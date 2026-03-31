@@ -1,0 +1,34 @@
+int sensorPin = A0;   // Broche du capteur de température
+int ledPin = 13;      // Broche de la LED d'alerte
+float temperatureC;   // Variable pour stocker la température (en décimal)
+
+void setup() {
+  pinMode(ledPin, OUTPUT);  // On déclare la LED comme une sortie (actionneur)
+  Serial.begin(9600);       // On allume le Moniteur Série (l'écran de contrôle)
+}
+
+void loop() {
+  // Lire la valeur électrique brute du capteur (un chiffre entre 0 et 1023)
+  int reading = analogRead(sensorPin);
+
+  // Le calcul d'ingénieur : Conversion du signal en Volts, puis en degrés Celsius
+  // Le TMP36 a un décalage de 500mV (0.5V) et une échelle de 10mV par degré.
+  float voltage = reading * 5.0 / 1024.0;
+  temperatureC = (voltage - 0.5) * 100.0;
+
+  // Affichage des données sur la console
+  Serial.print("Température du système : ");
+  Serial.print(temperatureC);
+  Serial.println(" C");
+
+  // La logique de l'Alerte Industrielle
+  if (temperatureC > 50.0) {
+    digitalWrite(ledPin, HIGH);   // On allume la LED rouge
+    Serial.println("⚠️ ALERTE : Surchauffe critique détectée !");
+  } else {
+    digitalWrite(ledPin, LOW);    // On éteint la LED
+  }
+
+  // Pause de 1 seconde pour ne pas saturer le processeur
+  delay(1000); 
+}
